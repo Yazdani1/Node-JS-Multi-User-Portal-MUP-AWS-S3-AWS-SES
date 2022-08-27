@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-// app.use("/api",require("./router/user"));
+app.use("/api",require("./router/user"));
 
 
 app.listen(port, (req, res) => {
