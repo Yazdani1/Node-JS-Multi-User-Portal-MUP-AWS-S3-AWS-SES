@@ -62,7 +62,7 @@ exports.deleteCategory = async (req,res)=>{
         res.status(200).json(delete_category);
 
     } catch(error){
-        return res.status(400).json({error:"something went wrong, could not found category id"})
+        return res.status(400).json({error:"Something went wrong"})
 
     }
 

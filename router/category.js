@@ -6,7 +6,7 @@ const { requireLogin } = require("../middleware/auth");
 // dashboard
 
 router.post("/create-category",requireLogin,createCategory);
-router.get("/category-list",requireLogin,getCategoryList);
+router.get("/category-list",getCategoryList);
 router.delete("/delete-category/:id",requireLogin,deleteCategory);
 
 module.exports = router;
