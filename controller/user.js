@@ -10,12 +10,10 @@ const awsConfig = {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_kEY_INFO,
   region: process.env.AWS_REGION_INFO,
   apiVersion: process.env.AWS_API_VERSION_INFO,
-  correctClockSkew: true
-  
+  correctClockSkew: true,
 };
 
 const SES = new AWS.SES(awsConfig);
-
 
 exports.userRegistration = async (req, res) => {
   try {
@@ -65,13 +63,12 @@ exports.userRegistration = async (req, res) => {
         },
         Subject: {
           Charset: "UTF-8",
-          Data: "Welcome : "+name,
+          Data: "Welcome : " + name,
         },
       },
     };
 
     const emailSent = SES.sendEmail(params).promise();
-    
 
     const createUserAccount = await User.create(userDetails);
 
@@ -131,13 +128,12 @@ exports.userLogin = async (req, res) => {
         },
         Subject: {
           Charset: "UTF-8",
-          Data: "Welcome Back: "+email,
+          Data: "Welcome Back: " + email,
         },
       },
     };
 
     const emailSent = SES.sendEmail(params).promise();
-    
 
     user.password = undefined;
     user.expireToken = undefined;
@@ -149,4 +145,11 @@ exports.userLogin = async (req, res) => {
       .status(400)
       .json({ error: "Something Went Wrong, Could not Log In" });
   }
+};
+
+exports.logedInuser = async (rew, res) => {
+  try {
+    const logeduser = await User.findOne(req.user._id);
+    res.status(200).json(logeduser);
+  } catch {}
 };
