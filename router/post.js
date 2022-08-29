@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const {uploadImage,createPost,getAllUserPosts,getLogedInUserPosts,deletePosts} = require("../controller/post");
+const {uploadImage,createPost,getAllUserPosts,getLogedInUserPosts,deletePosts,getDetailsPost} = require("../controller/post");
 const { requireLogin } = require("../middleware/auth");
 
 
@@ -19,7 +19,10 @@ router.get("/get-all-posts",getAllUserPosts);
 router.get("/logedin-user-posts",requireLogin,getLogedInUserPosts);
 
 // to delete post
-
 router.delete("/delete-post/:id",requireLogin,deletePosts);
+
+// details post, related post by category and more posts by the same user
+
+router.get("/details-post/:slug",getDetailsPost);
 
 module.exports = router;

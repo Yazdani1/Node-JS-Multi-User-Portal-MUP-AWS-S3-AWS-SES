@@ -143,13 +143,50 @@ exports.getLogedInUserPosts = async (req, res) => {
 
 exports.deletePosts = async (req, res) => {
   try {
-
-    const delete_query = {_id: req.params.id}
+    const delete_query = { _id: req.params.id };
 
     const delete_post = await Post.findByIdAndDelete(delete_query);
 
-    return res.status(200).json({delete_post,message:"Post Deleted Successfully"})
+    return res
+      .status(200)
+      .json({ delete_post, message: "Post Deleted Successfully" });
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ error: "Something went wrong, Could not find post id" });
+  }
+};
 
+// details post, related post by category and more posts by the same user
+
+exports.getDetailsPost = async (req, res) => {
+  try {
+    const detailsPost_query = { slug: req.params.slug };
+
+    // to get details post
+
+    const detailsPost = await Post.findOne(detailsPost_query)
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+    // to get related posts by category
+
+    const relatedPosts = await Post.find({
+      _id: { $ne: detailsPost._id },
+      categoryBy: detailsPost.categoryBy._id,
+    })
+      .sort({ date: "DESC" })
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+    // to get more posts by the same user
+
+    const morePostsbySameUser = await Post.find({postedBy:detailsPost.postedBy._id})
+      .sort({ date: "DESC" })
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+    return res.status(200).json({ detailsPost, relatedPosts,morePostsbySameUser });
   } catch (error) {
     return res
       .status(404)
