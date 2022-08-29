@@ -179,14 +179,63 @@ exports.getDetailsPost = async (req, res) => {
       .populate("categoryBy", "_id categoryName slug date")
       .populate("postedBy", "_id name date");
 
+    return res.status(200).json(detailsPost);
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ error: "Something went wrong, Could not find post id" });
+  }
+};
+
+// to get more posts by the same user
+
+exports.getMorePostsByUser = async (req, res) => {
+  try {
+    const post_query = { slug: req.params.slug };
+
+    const detailsPost = await Post.findOne(post_query)
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
     // to get more posts by the same user
 
-    const morePostsbySameUser = await Post.find({postedBy:detailsPost.postedBy._id})
+    const morePostsbySameUser = await Post.find({
+      _id: { $ne: detailsPost._id },
+      postedBy: detailsPost.postedBy._id,
+    })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
       .populate("postedBy", "_id name date");
 
-    return res.status(200).json({ detailsPost, relatedPosts,morePostsbySameUser });
+    return res.status(200).json(morePostsbySameUser);
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ error: "Something went wrong, Could not find post id" });
+  }
+};
+
+// to get related posts by category
+
+exports.getRelatedPosts = async (req, res) => {
+  try {
+    const post_query = { slug: req.params.slug };
+
+    const detailsPost = await Post.findOne(post_query)
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+    const relatedPosts = await Post.find({
+      _id: { $ne: detailsPost._id },
+      categoryBy: detailsPost.categoryBy._id,
+    })
+      .sort({ date: "DESC" })
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+
+      return res.status(200).json(relatedPosts);
+
   } catch (error) {
     return res
       .status(404)
