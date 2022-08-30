@@ -11,6 +11,16 @@ var userSchema = mongoose.Schema({
   password: {
     type: String,
   },
+  slug: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    index: true,
+  },
+
+  profession:{
+    type: String,
+  },
 
   date: {
     type: Date,

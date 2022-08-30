@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AWS = require("aws-sdk");
+const slugify = require("slugify");
 const User = require("../model/User");
+const Post = require("../model/Post");
 
 require("dotenv").config();
 
@@ -19,7 +21,7 @@ const SES = new AWS.SES(awsConfig);
 
 exports.userRegistration = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, profession, password } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: "Please Add Your Full Name" });
@@ -29,8 +31,23 @@ exports.userRegistration = async (req, res) => {
         .status(400)
         .json({ error: "Please Add Your valid E-mail Address" });
     }
+
+    if (!profession) {
+      return res.status(400).json({ error: "Please select profession" });
+    }
+
     if (!password) {
       return res.status(400).json({ error: "Please Add Your Password" });
+    }
+
+    const slug = slugify(name);
+
+    const alreadyExist = await User.findOne({ name });
+
+    if (alreadyExist) {
+      return res
+        .status(422)
+        .json({ error: "User name already exist. try a different name" });
     }
 
     let user = await User.findOne({ email });
@@ -42,6 +59,8 @@ exports.userRegistration = async (req, res) => {
     userDetails = new User({
       name,
       email,
+      slug,
+      profession,
       password: hash_password,
     });
 
@@ -155,7 +174,9 @@ exports.userLogin = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const userlists = await User.find({}).sort({ date: "DESC" });
+    const userlists = await User.find({})
+      .sort({ date: "DESC" })
+      .select("-password");
 
     return res.status(200).json(userlists);
   } catch (error) {
@@ -178,5 +199,42 @@ exports.deleteUser = async (req, res) => {
     return res
       .status(400)
       .json({ error: "Something Went Wrong, Could not find users" });
+  }
+};
+
+// to get single user list
+
+exports.getSingleUserDetails = async (req, res) => {
+  try {
+    const user_query = { slug: req.params.slug };
+
+    const userdetails = await User.findOne(user_query).select("-password");
+
+    return res.status(200).json(userdetails);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: "Something Went Wrong, Could not find user" });
+  }
+};
+
+// single user all posts
+
+exports.getSingleUserAllPosts = async (req, res) => {
+  try {
+    const user_query = { slug: req.params.slug };
+
+    const userinfo = await User.findOne(user_query);
+
+    const userposts = await Post.find({ postedBy: userinfo._id })
+      .sort({ date: "DESC" })
+      .populate("categoryBy", "_id categoryName slug date")
+      .populate("postedBy", "_id name date");
+
+    return res.status(200).json(userposts);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: "Something Went Wrong, Could not find posts" });
   }
 };
