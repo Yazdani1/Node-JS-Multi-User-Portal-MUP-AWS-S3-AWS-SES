@@ -15,6 +15,8 @@ const awsConfig = {
 
 const SES = new AWS.SES(awsConfig);
 
+// to register
+
 exports.userRegistration = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -79,6 +81,8 @@ exports.userRegistration = async (req, res) => {
     return res.status(400).json({ error: "Account could not create" });
   }
 };
+
+// to log in
 
 exports.userLogin = async (req, res) => {
   try {
@@ -147,9 +151,32 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-exports.logedInuser = async (rew, res) => {
+// to get all user lists
+
+exports.getAllUsers = async (req, res) => {
   try {
-    const logeduser = await User.findOne(req.user._id);
-    res.status(200).json(logeduser);
-  } catch {}
+    const userlists = await User.find({}).sort({ date: "DESC" });
+
+    return res.status(200).json(userlists);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: "Something Went Wrong, Could not find users" });
+  }
+};
+
+// to delete user list
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const deleteQuery = { _id: req.params.id };
+
+    const deleteuser = await User.findByIdAndDelete(deleteQuery);
+
+    return res.status(200).json(deleteuser);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: "Something Went Wrong, Could not find users" });
+  }
 };
