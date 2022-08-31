@@ -1,16 +1,14 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
-var userSchema = mongoose.Schema({
-  name: {
+var postSchema = mongoose.Schema({
+  title: {
     type: String,
   },
-  email: {
+  des: {
     type: String,
   },
-  password: {
-    type: String,
-  },
+
   slug: {
     type: String,
     lowercase: true,
@@ -18,16 +16,21 @@ var userSchema = mongoose.Schema({
     index: true,
   },
 
-  profession:{
-    type: String,
+  image: {},
+
+  categoryBy: {
+    type: ObjectId,
+    ref: "Category",
   },
 
+  postedBy: {
+    type: ObjectId,
+    ref: "User",
+  },
   date: {
     type: Date,
     default: Date.now,
   },
-  resetToken: String,
-  expireToken: Date,
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Post", postSchema);

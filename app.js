@@ -8,13 +8,15 @@ const path = require('path');
 require("./model/db");
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "6mb" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
 app.use("/api",require("./router/user"));
+app.use("/api",require("./router/category"));
+app.use("/api",require("./router/post"));
 
 
 app.listen(port, (req, res) => {
