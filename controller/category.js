@@ -84,7 +84,7 @@ exports.getPostsByCategory = async (req, res) => {
     const postsbycategory = await Post.find({ categoryBy: single_category._id })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(postsbycategory);
   } catch (error) {

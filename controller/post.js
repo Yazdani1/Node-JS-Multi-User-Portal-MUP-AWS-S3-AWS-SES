@@ -112,7 +112,7 @@ exports.getAllUserPosts = async (req, res) => {
     const allPosts = await Post.find({})
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(allPosts);
   } catch (error) {
@@ -129,7 +129,7 @@ exports.getLogedInUserPosts = async (req, res) => {
     const allPosts = await Post.find({ postedBy: req.user })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(allPosts);
   } catch (error) {
@@ -167,7 +167,7 @@ exports.getDetailsPost = async (req, res) => {
 
     const detailsPost = await Post.findOne(detailsPost_query)
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(detailsPost);
   } catch (error) {
@@ -185,7 +185,7 @@ exports.getMorePostsByUser = async (req, res) => {
 
     const detailsPost = await Post.findOne(post_query)
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     // to get more posts by the same user
 
@@ -195,7 +195,7 @@ exports.getMorePostsByUser = async (req, res) => {
     })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(morePostsbySameUser);
   } catch (error) {
@@ -213,7 +213,7 @@ exports.getRelatedPosts = async (req, res) => {
 
     const detailsPost = await Post.findOne(post_query)
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     const relatedPosts = await Post.find({
       _id: { $ne: detailsPost._id },
@@ -221,7 +221,7 @@ exports.getRelatedPosts = async (req, res) => {
     })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
 
       return res.status(200).json(relatedPosts);

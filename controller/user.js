@@ -229,7 +229,7 @@ exports.getSingleUserAllPosts = async (req, res) => {
     const userposts = await Post.find({ postedBy: userinfo._id })
       .sort({ date: "DESC" })
       .populate("categoryBy", "_id categoryName slug date")
-      .populate("postedBy", "_id name date");
+      .populate("postedBy", "_id name date slug");
 
     return res.status(200).json(userposts);
   } catch (error) {
